@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:lottie/lottie.dart';
 import 'package:app_weather/service/transform.dart';
-
-
+import 'package:app_weather/service/network.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 class InitialPage extends StatefulWidget {
   const InitialPage({super.key});
 
@@ -14,36 +12,15 @@ class InitialPage extends StatefulWidget {
 
 class _InitialPageState extends State<InitialPage> {
   List<String> timezones = [];
-  bool isLoading = false;
-
-  Future<void> fetchTimeZones() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response =
-          await http.get(Uri.parse('https://worldtimeapi.org/api/timezone'));
-      if (response.statusCode == 200) {
-        setState(() {
-          List data = json.decode(response.body);
-          timezones = List<String>.from(data);
-        });
-      } else {
-        throw Exception('Failed to load timezones');
-      }
-    } catch (e) {
-      throw Exception('Error fetching timezones: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchTimeZones();
+    fetchTimeZones((data) {
+      setState(() {
+        timezones = data;
+      });
+    });
   }
 
   @override
@@ -59,27 +36,30 @@ class _InitialPageState extends State<InitialPage> {
 
   // Mobile layout (portrait or small screens)
   Widget _buildMobileLayout() {
-    return SingleChildScrollView(  // Wrap the Column in a SingleChildScrollView to prevent overflow
+    return Expanded(
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.asset('assets/weather2.json'),
-            const Text(
+            SizedBox(
+              height: 200.h,
+              child: Lottie.asset('assets/weather2.json')),
+             Text(
               'Weather',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 75.0,
+                fontSize: 55.0.sp,
               ),
             ),
-            const Text(
+
+             Text(
               'Forecasts',
               style: TextStyle(
                 color: Colors.yellow,
-                fontSize: 75.0,
+                fontSize: 55.0.sp,
               ),
             ),
-            const SizedBox(height: 50.0),
+             SizedBox(height: 10.0.h),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(
@@ -91,13 +71,13 @@ class _InitialPageState extends State<InitialPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.yellow,
               ),
-              child: const Row(
+              child:  Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     'Get Started',
                     style: TextStyle(
-                      fontSize: 30.0,
+                      fontSize: 20.0.sp,
                       color: Colors.deepPurpleAccent,
                     ),
                   ),
@@ -112,34 +92,40 @@ class _InitialPageState extends State<InitialPage> {
 
   // Tablet layout (larger screens or landscape mode)
   Widget _buildTabletLayout() {
-    return SingleChildScrollView(  // Ensure scrolling on large screens too
+    return SingleChildScrollView(
+      // Ensure scrolling on large screens too
       child: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ConstrainedBox(  // Prevent overflow by setting constraints
+            ConstrainedBox(
+              // Prevent overflow by setting constraints
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width,  // Prevent it from overflowing horizontally
+                maxWidth: MediaQuery.of(context)
+                    .size
+                    .width, // Prevent it from overflowing horizontally
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Lottie.asset('assets/weather2.json'),
-                  const Text(
+                  SizedBox(
+                    height: 200.h,
+                    child: Lottie.asset('assets/weather2.json')),
+                   Text(
                     'Weather',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 100.0,
+                      fontSize: 55.0.sp,
                     ),
                   ),
-                  const Text(
+                   Text(
                     'Forecasts',
                     style: TextStyle(
                       color: Colors.yellow,
-                      fontSize: 100.0,
+                      fontSize: 55.0.sp,
                     ),
                   ),
-                  const SizedBox(height: 50.0),
+                   SizedBox(height: 50.0.h),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(
@@ -151,13 +137,13 @@ class _InitialPageState extends State<InitialPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.yellow,
                     ),
-                    child: const Row(
+                    child:  Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           'Get Started',
                           style: TextStyle(
-                            fontSize: 40.0,
+                            fontSize: 20.0.sp,
                             color: Colors.deepPurpleAccent,
                           ),
                         ),
